@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Event } from '../../events/entities/event.entity';
 import { Ticket } from '../../tickets/entities/ticket.entity';
+import { Session } from '../../sessions/entities/session.entity';
 
 export enum UserRole {
   USER = 'USER',
@@ -29,10 +30,10 @@ export class User {
   @Column()
   passwordHash: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   @Column({
@@ -47,4 +48,7 @@ export class User {
 
   @OneToMany(() => Ticket, (ticket) => ticket.user)
   tickets: Ticket[];
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session[];
 }

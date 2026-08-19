@@ -13,10 +13,10 @@ export class Ticket {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user: User) => user.tickets, {
@@ -24,6 +24,8 @@ export class Ticket {
   })
   user: User;
 
-  @ManyToOne(() => TicketType, (ticketType) => ticketType.tickets)
+  @ManyToOne(() => TicketType, (ticketType) => ticketType.tickets, {
+    nullable: false,
+  })
   ticketType: TicketType;
 }

@@ -15,19 +15,20 @@ export class Event {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @Column()
+  @Column({ type: 'timestamptz' })
   startTime: Date;
 
   @Column({
+    type: 'timestamptz',
     nullable: true,
   })
-  endTime: Date;
+  endTime: Date | null;
 
   @Column()
   place: string;

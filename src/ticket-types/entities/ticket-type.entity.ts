@@ -12,15 +12,15 @@ import { Event } from '../../events/entities/event.entity';
 import { Ticket } from '../../tickets/entities/ticket.entity';
 
 @Entity('ticket_type')
-@Check('"maxNumber" >= 0')
+@Check('"maxNumber" > 0')
 export class TicketType {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   @Column()
