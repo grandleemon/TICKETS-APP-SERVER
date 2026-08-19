@@ -8,6 +8,7 @@ import { EventsModule } from './events/events.module';
 import { TicketTypesModule } from './ticket-types/ticket-types.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { SessionsModule } from './sessions/sessions.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { SessionsModule } from './sessions/sessions.module';
     TicketTypesModule,
     TicketsModule,
     SessionsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
