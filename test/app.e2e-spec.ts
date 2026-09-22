@@ -37,7 +37,7 @@ describe('AppController (e2e)', () => {
   it('uses test database', async () => {
     const dataSource = app.get(DataSource);
 
-    const [result] = await dataSource.query(
+    const [result] = await dataSource.query<Array<{ name: string }>>(
       'SELECT current_database() AS name',
     );
 

@@ -352,36 +352,47 @@ Suggested format:
 # Feature: Reservation Expiration
 
 ## Context
+
 Why this feature exists.
 
 ## Goals
+
 - ...
 
 ## Non-goals
+
 - ...
 
 ## Requirements
+
 - ...
 
 ## Business Rules
+
 - ...
 
 ## Authorization
+
 - ...
 
 ## Data / Persistence Requirements
+
 - ...
 
 ## API Behavior
+
 - ...
 
 ## Edge Cases
+
 - ...
 
 ## Acceptance Criteria
+
 - ...
 
 ## Open Questions
+
 - ...
 ```
 
@@ -459,46 +470,57 @@ The plan should describe **how to implement the approved specification in this r
 
 Suggested format:
 
-```md
+````md
 # Implementation Plan: Reservation Expiration
 
 ## Existing Architecture Summary
+
 ...
 
 ## Files to Change
+
 ### `src/...`
+
 Reason:
+
 - ...
-Changes:
+  Changes:
 - ...
 
 ## New Files
+
 ...
 
 ## Database Changes
+
 ...
 
 ## API Changes
+
 ...
 
 ## Implementation Steps
+
 1. ...
 2. ...
 3. ...
 
 ## Test Plan
+
 - unit:
 - integration:
 - e2e:
 
 ## Verification
+
 ```bash
 ...
 ```
 
 ## Risks
+
 - ...
-```
+````
 
 Plans should prefer small independently verifiable steps and avoid unrelated refactors.
 

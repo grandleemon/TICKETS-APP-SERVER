@@ -12,4 +12,4 @@ async function bootstrap() {
   console.log('SERVER RUNNING ON:', process.env.PORT ?? 3000);
 }
 
-bootstrap();
+void bootstrap();
