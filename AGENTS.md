@@ -76,7 +76,7 @@ Use subagents only when they provide useful context isolation, parallel research
 - Do not push, create a pull request, merge, rebase, amend, or rewrite history without a separate explicit request.
 - `npm install` runs the `prepare` script and activates the project Husky hooks.
 - Pre-commit runs lint-staged: it lints/formats staged TypeScript under `src` and `test`, and formats supported staged documentation/configuration files.
-- Pre-push runs `npm run check:local` (type-check, build, and unit tests). Repository-wide lint and e2e remain manual until their documented baseline failures are fixed.
+- Pre-push runs `npm run check:local` (type-check, build, and unit tests). Repository-wide lint and formatting run in GitHub Actions when a pull request has the `run-checks` label. E2E remains manual and requires a separate test database.
 - Use the `prepare-local-commit` skill when the user asks Codex to create a local commit.
 
 ## Verification

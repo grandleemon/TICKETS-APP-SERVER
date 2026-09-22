@@ -51,6 +51,11 @@ The pre-commit hook uses lint-staged, so it only lints and formats supported
 staged files. The pre-push hook runs `npm run check:local`. E2E tests remain a
 separate command because they require a configured PostgreSQL test database.
 
+To run the same checks on a pull request in GitHub, add the `run-checks` label.
+GitHub Actions then runs the type-check, build, unit tests, repository-wide
+TypeScript lint, and formatting checks. Checks repeat when new commits are
+pushed to a labeled pull request. Remove the label to stop future runs.
+
 ## Compile and run the project
 
 ```bash
