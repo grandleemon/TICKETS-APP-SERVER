@@ -23,13 +23,33 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Backend API for a ticket sales application, built with NestJS, TypeScript, TypeORM, and PostgreSQL. The current domain modules cover users, authentication and persisted sessions, events, ticket types, and tickets.
+
+The API is served under `/api/v1`. Database schema changes are managed through TypeORM migrations, and automatic schema synchronization is disabled.
 
 ## Project setup
 
 ```bash
 $ npm install
 ```
+
+Installing dependencies also activates the repository's Husky Git hooks.
+
+## Local quality gates
+
+```bash
+# type-check, build, and unit tests
+$ npm run check:local
+
+# read-only repository-wide checks
+$ npm run typecheck
+$ npm run lint:check
+$ npm run format:check
+```
+
+The pre-commit hook uses lint-staged, so it only lints and formats supported
+staged files. The pre-push hook runs `npm run check:local`. E2E tests remain a
+separate command because they require a configured PostgreSQL test database.
 
 ## Compile and run the project
 
