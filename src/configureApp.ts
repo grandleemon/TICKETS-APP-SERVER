@@ -3,6 +3,7 @@ import {
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser';
 
 export const configureApp = (app: INestApplication) => {
   app.setGlobalPrefix('api');
@@ -17,4 +18,5 @@ export const configureApp = (app: INestApplication) => {
       transform: true,
     }),
   );
+  app.use(cookieParser());
 };
