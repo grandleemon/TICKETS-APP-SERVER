@@ -9,6 +9,11 @@ import { User } from '../user/entities/user.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 import { hash, verify } from 'argon2';
 import { LoginUserDto } from './dtos/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'node:crypto';
+import { SessionsService } from '../sessions/sessions.service';
+import { JwtTokenPayload } from './types/jwt-token-payload';
 
 type PostgresError = Error & {
   code?: string;
@@ -18,7 +23,10 @@ type PostgresError = Error & {
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+    private readonly sessionService: SessionsService,
   ) {}
 
   async register(createUserDto: CreateUserDto) {
@@ -43,12 +51,32 @@ export class AuthService {
     try {
       const savedUser = await this.userRepository.save(user);
 
+      const sessionId = randomUUID();
+
+      const accessToken = await this.signAccessToken(savedUser.id, sessionId);
+      const refreshToken = await this.signRefreshToken(savedUser.id, sessionId);
+
+      const refreshTtl = Number(
+        this.configService.getOrThrow<string>('JWT_REFRESH_TTL'),
+      );
+
+      await this.sessionService.createSession(
+        savedUser.id,
+        sessionId,
+        refreshToken,
+        new Date(Date.now() + refreshTtl * 1000),
+      );
+
       return {
-        id: savedUser.id,
-        name: savedUser.name,
-        email: savedUser.email,
-        role: savedUser.role,
-        createdAt: savedUser.createdAt,
+        user: {
+          id: savedUser.id,
+          name: savedUser.name,
+          email: savedUser.email,
+          role: savedUser.role,
+          createdAt: savedUser.createdAt,
+        },
+        accessToken,
+        refreshToken,
       };
     } catch (error) {
       if (
@@ -82,12 +110,99 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    const sessionId = randomUUID();
+
+    const accessToken = await this.signAccessToken(existingUser.id, sessionId);
+    const refreshToken = await this.signRefreshToken(
+      existingUser.id,
+      sessionId,
+    );
+
+    const refreshTtl = Number(
+      this.configService.getOrThrow<string>('JWT_REFRESH_TTL'),
+    );
+
+    await this.sessionService.createSession(
+      existingUser.id,
+      sessionId,
+      refreshToken,
+      new Date(Date.now() + refreshTtl * 1000),
+    );
+
     return {
-      id: existingUser.id,
-      name: existingUser.name,
-      email: existingUser.email,
-      role: existingUser.role,
-      createdAt: existingUser.createdAt,
+      user: {
+        id: existingUser.id,
+        name: existingUser.name,
+        email: existingUser.email,
+        role: existingUser.role,
+        createdAt: existingUser.createdAt,
+      },
+      accessToken,
+      refreshToken,
     };
+  }
+
+  async signAccessToken(userId: string, sessionId: string) {
+    const payload: JwtTokenPayload = {
+      sub: userId,
+      sessionId,
+      type: 'access',
+    };
+
+    return await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: Number(process.env.JWT_ACCESS_TTL),
+    });
+  }
+
+  async signRefreshToken(userId: string, sessionId: string) {
+    const payload: JwtTokenPayload = {
+      sub: userId,
+      sessionId,
+      type: 'refresh',
+    };
+
+    return await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: Number(process.env.JWT_REFRESH_TTL),
+    });
+  }
+
+  async verifyAccessToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync<JwtTokenPayload>(
+        token,
+        {
+          secret: this.configService.getOrThrow<string>('JWT_ACCESS_SECRET'),
+        },
+      );
+
+      if (payload.type !== 'access') {
+        throw new Error();
+      }
+
+      return payload;
+    } catch {
+      throw new UnauthorizedException('Invalid or expired access token');
+    }
+  }
+
+  async verifyRefreshToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync<JwtTokenPayload>(
+        token,
+        {
+          secret: this.configService.getOrThrow<string>('JWT_REFRESH_SECRET'),
+        },
+      );
+
+      if (payload.type !== 'refresh') {
+        throw new Error();
+      }
+
+      return payload;
+    } catch {
+      throw new UnauthorizedException('Invalid or expired access token');
+    }
   }
 }

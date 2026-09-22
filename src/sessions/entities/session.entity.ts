@@ -3,13 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 
 @Entity('sessions')
 export class Session {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn('uuid')
   id: string;
 
   @ManyToOne(() => User, (user) => user.sessions, { nullable: false })

@@ -6,10 +6,12 @@ import { AppModule } from './../src/app.module';
 import { DataSource, Repository } from 'typeorm';
 import { configureApp } from '../src/configureApp';
 import { User } from '../src/user/entities/user.entity';
+import { Session } from '../src/sessions/entities/session.entity';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let userRepository: Repository<User>;
+  let sessionRepository: Repository<Session>;
 
   const email = 'race-condition@example.com';
 
@@ -24,9 +26,16 @@ describe('AppController (e2e)', () => {
 
     const dataSource = app.get(DataSource);
     userRepository = dataSource.getRepository(User);
+    sessionRepository = dataSource.getRepository(Session);
   });
 
   afterEach(async () => {
+    const user = await userRepository.findOne({ where: { email } });
+
+    if (user) {
+      await sessionRepository.delete({ user: { id: user.id } });
+    }
+
     await userRepository.delete({ email });
   });
 
@@ -37,7 +46,7 @@ describe('AppController (e2e)', () => {
   it('uses test database', async () => {
     const dataSource = app.get(DataSource);
 
-    const [result] = await dataSource.query(
+    const [result] = await dataSource.query<Array<{ name: string }>>(
       'SELECT current_database() AS name',
     );
 
